@@ -180,7 +180,7 @@ src/main/resources/
 
 ### Flujo Completo:
 
-#### 1️. Antes de Empezar CUALQUIER Cosa
+#### 1. Antes de Empezar CUALQUIER Cosa
 
 **En IntelliJ:**
 ```
@@ -202,7 +202,7 @@ git merge upstream/main
 git push origin main
 ```
 
-#### 2️. Crear una Rama para tu Feature
+#### 2. Crear una Rama para tu Feature
 
 **En IntelliJ:**
 ```
@@ -223,7 +223,7 @@ git checkout -b feature/nombre-de-tu-modulo
 # git checkout -b refactor/optimizar-queries
 ```
 
-#### 3️. Trabaja en tu Rama
+#### 3. Trabaja en tu Rama
 
 **En IntelliJ:**
 ```
@@ -252,7 +252,7 @@ git commit -m "feat: Add prestamos module with CRUD operations"
 git push origin feature/nombre-de-tu-modulo
 ```
 
-#### 4️. Crear Pull Request
+#### 4. Crear Pull Request
 
 1. IntelliJ te mostrará una notificación con link al PR
 2. O ve a **GitHub** → Tu fork manualmente
@@ -266,7 +266,7 @@ git push origin feature/nombre-de-tu-modulo
 5. Escribe un buen título y descripción
 6. **Espera aprobación** antes de hacer merge
 
-#### 5️. Después de que Aprueben tu PR
+#### 5. Después de que Aprueben tu PR
 
 **En IntelliJ:**
 ```
