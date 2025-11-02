@@ -77,7 +77,7 @@ git remote -v  # Verificar
 CREATE DATABASE ameribank;
 ```
 
-### 3. Configurar Credenciales
+### 3. Configurar application.properties
 
 **En IntelliJ:**
 
@@ -86,14 +86,11 @@ CREATE DATABASE ameribank;
 2. Clic derecho en application.properties.example
 3. Copy → Paste → Renombra a: application.properties
 4. Doble clic para abrir
-5. Edita con tus credenciales
+5. Edita respecto a tu entorno
 ```
 
 Configura:
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/ameribank
-spring.datasource.username=TU_USUARIO
-spring.datasource.password=TU_PASSWORD
 spring.jpa.hibernate.ddl-auto=update
 server.port=8080
 ```
@@ -108,6 +105,20 @@ server.port=8080
 cp src/main/resources/application.properties.example src/main/resources/application.properties
 nano src/main/resources/application.properties
 ```
+### 4. Configura Credenciales de Base de datos
+Tus credenciales iran en `/src/main/java/org/amerike/ameribank/config/ConexionDB.java`
+```java
+public class ConexionDB {
+    private static final String URL = "jdbc:mysql://localhost/Ameribank";
+    private static final String USER = "usuario_java";
+    private static final String PASS = "TuContraseniaSegura123";
+
+    public static Connection conectar() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASS);
+    }
+}
+```
+> Esto cambiara una vez implementada la funcionalidad de llaves `.pem`
 
 ### 4. Ejecutar el Proyecto
 
