@@ -2,7 +2,6 @@ package org.amerike.ameribank.dao;
 
 import org.amerike.ameribank.config.ConexionDB;
 import org.amerike.ameribank.model.Movimiento;
-import org.amerike.ameribank.model.TipoMovimiento;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -73,7 +72,6 @@ public class MovimientoDAO {
                 Movimiento movimiento = new Movimiento();
                 movimiento.setId(rs.getLong("id"));
                 movimiento.setCuentaId(cuentaId);
-                movimiento.setTipoMovimiento(TipoMovimiento.valueOf(rs.getString("tipo_movimiento")));
                 movimiento.setMonto(rs.getBigDecimal("monto"));
                 movimiento.setDescripcion(rs.getString("descripcion"));
                 movimiento.setFechaMovimiento(rs.getTimestamp("fecha_movimiento").toLocalDateTime());
