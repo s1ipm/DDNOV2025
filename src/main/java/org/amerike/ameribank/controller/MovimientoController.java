@@ -1,12 +1,11 @@
 package org.amerike.ameribank.controller;
 
+import org.amerike.ameribank.dao.MovimientoDAO;
 import org.amerike.ameribank.model.Movimiento;
-import org.amerike.ameribank.service.MovimientoService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,69 +13,94 @@ import java.util.Map;
 @RequestMapping("/api/movimientos")
 public class MovimientoController {
 
-    @Autowired
-    private MovimientoService movimientoService;
+    private final MovimientoDAO movimientoDAO;
+
+    public MovimientoController(MovimientoDAO movimientoDAO) {
+        this.movimientoDAO = movimientoDAO;
+    }
 
     @PostMapping("/deposito")
-    public ResponseEntity<?> realizarDeposito(@RequestBody Map<String, Object> request) {
+    public Map<String, String> registrarDeposito(
+            @RequestParam Long cuentaId,
+            @RequestParam BigDecimal monto,
+            @RequestParam String descripcion,
+            @RequestParam String cuentaRemitente) {
+
+        System.out.println("DEPOSITO - cuentaId: " + cuentaId + ", monto: " + monto);
+
+        Map<String, String> response = new HashMap<>();
         try {
-            Long cuentaId = Long.valueOf(request.get("cuentaId").toString());
-            BigDecimal monto = new BigDecimal(request.get("monto").toString());
-            String descripcion = (String) request.get("descripcion");
-            String cuentaRemitente = (String) request.get("cuentaRemitente");
-
-            movimientoService.realizarDeposito(cuentaId, monto, descripcion, cuentaRemitente);
-
-            return ResponseEntity.ok().body("Depósito realizado exitosamente");
-
+            movimientoDAO.registrarDeposito(cuentaId, monto, descripcion, cuentaRemitente);
+            response.put("status", "success");
+            response.put("message", "Depósito realizado exitosamente");
+            System.out.println("DEPOSITO EXITOSO");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al realizar depósito: " + e.getMessage());
+            System.out.println("ERROR DEPOSITO: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", "Error al realizar depósito: " + e.getMessage());
         }
+        return response;
     }
 
     @PostMapping("/retiro")
-    public ResponseEntity<?> realizarRetiro(@RequestBody Map<String, Object> request) {
+    public Map<String, String> registrarRetiro(
+            @RequestParam Long cuentaId,
+            @RequestParam BigDecimal monto,
+            @RequestParam String descripcion) {
+
+        System.out.println("RETIRO - cuentaId: " + cuentaId + ", monto: " + monto);
+
+        Map<String, String> response = new HashMap<>();
         try {
-            Long cuentaId = Long.valueOf(request.get("cuentaId").toString());
-            BigDecimal monto = new BigDecimal(request.get("monto").toString());
-            String descripcion = (String) request.get("descripcion");
-
-            movimientoService.realizarRetiro(cuentaId, monto, descripcion);
-
-            return ResponseEntity.ok().body("Retiro realizado exitosamente");
-
+            movimientoDAO.registrarRetiro(cuentaId, monto, descripcion);
+            response.put("status", "success");
+            response.put("message", "Retiro realizado exitosamente");
+            System.out.println("RETIRO EXITOSO");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al realizar retiro: " + e.getMessage());
+            System.out.println("ERROR RETIRO: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", "Error al realizar retiro: " + e.getMessage());
         }
+        return response;
     }
 
     @PostMapping("/transferencia")
-    public ResponseEntity<?> realizarTransferencia(@RequestBody Map<String, Object> request) {
+    public Map<String, String> registrarTransferencia(
+            @RequestParam Long cuentaOrigenId,
+            @RequestParam String cuentaDestino,
+            @RequestParam BigDecimal monto,
+            @RequestParam String descripcion) {
+
+        System.out.println("TRANSFERENCIA - cuentaOrigen: " + cuentaOrigenId + ", cuentaDestino: " + cuentaDestino + ", monto: " + monto);
+
+        Map<String, String> response = new HashMap<>();
         try {
-            Long cuentaOrigenId = Long.valueOf(request.get("cuentaOrigenId").toString());
-            String cuentaDestino = (String) request.get("cuentaDestino");
-            BigDecimal monto = new BigDecimal(request.get("monto").toString());
-            String descripcion = (String) request.get("descripcion");
-
-            movimientoService.realizarTransferencia(cuentaOrigenId, cuentaDestino, monto, descripcion);
-
-            return ResponseEntity.ok().body("Transferencia realizada exitosamente");
-
+            movimientoDAO.registrarTransferencia(cuentaOrigenId, cuentaDestino, monto, descripcion);
+            response.put("status", "success");
+            response.put("message", "Transferencia realizada exitosamente");
+            System.out.println("TRANSFERENCIA EXITOSA");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al realizar transferencia: " + e.getMessage());
+            System.out.println("ERROR TRANSFERENCIA: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", "Error al realizar transferencia: " + e.getMessage());
         }
+        return response;
     }
 
-    @GetMapping("/cuenta/{cuentaId}")
-    public ResponseEntity<?> obtenerMovimientosPorCuenta(
-            @PathVariable Long cuentaId,
+    @GetMapping("/consulta")
+    public List<Movimiento> consultarMovimientos(
+            @RequestParam Long cuentaId,
             @RequestParam(defaultValue = "10") int limite) {
-        try {
-            List<Movimiento> movimientos = movimientoService.obtenerMovimientosPorCuenta(cuentaId, limite);
-            return ResponseEntity.ok(movimientos);
 
+        System.out.println("CONSULTA - cuentaId: " + cuentaId + ", limite: " + limite);
+
+        try {
+            List<Movimiento> movimientos = movimientoDAO.obtenerMovimientosPorCuenta(cuentaId, limite);
+            System.out.println("MOVIMIENTOS ENCONTRADOS: " + movimientos.size());
+            return movimientos;
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al obtener movimientos: " + e.getMessage());
+            System.out.println("ERROR CONSULTA: " + e.getMessage());
+            return List.of();
         }
     }
 }

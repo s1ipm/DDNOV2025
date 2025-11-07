@@ -10,7 +10,7 @@
 
 <div>
     <h2>Realizar Operación</h2>
-    <form id="movimientoForm" action="/movimientos" method="POST">
+    <form id="movimientoForm">
         <div>
             <label>Tipo de Operación:</label>
             <select id="tipoOperacion" name="tipoOperacion" onchange="mostrarCampos()" required>
@@ -24,53 +24,53 @@
         <div id="camposDeposito" style="display:none;">
             <div>
                 <label for="cuentaIdDeposito">ID de Cuenta:</label>
-                <input type="number" id="cuentaIdDeposito" name="cuentaIdDeposito">
+                <input type="number" id="cuentaIdDeposito" name="cuentaIdDeposito" value="1" required>
             </div>
             <div>
                 <label for="montoDeposito">Monto:</label>
-                <input type="number" step="0.01" id="montoDeposito" name="montoDeposito">
+                <input type="number" step="0.01" id="montoDeposito" name="montoDeposito" value="100" required>
             </div>
             <div>
                 <label for="descripcionDeposito">Descripción:</label>
-                <input type="text" id="descripcionDeposito" name="descripcionDeposito">
+                <input type="text" id="descripcionDeposito" name="descripcionDeposito" value="Deposito de prueba" required>
             </div>
             <div>
                 <label for="cuentaRemitenteDeposito">Cuenta Remitente:</label>
-                <input type="text" id="cuentaRemitenteDeposito" name="cuentaRemitenteDeposito">
+                <input type="text" id="cuentaRemitenteDeposito" name="cuentaRemitenteDeposito" value="EXTERNO">
             </div>
         </div>
 
         <div id="camposRetiro" style="display:none;">
             <div>
                 <label for="cuentaIdRetiro">ID de Cuenta:</label>
-                <input type="number" id="cuentaIdRetiro" name="cuentaIdRetiro">
+                <input type="number" id="cuentaIdRetiro" name="cuentaIdRetiro" required>
             </div>
             <div>
                 <label for="montoRetiro">Monto:</label>
-                <input type="number" step="0.01" id="montoRetiro" name="montoRetiro">
+                <input type="number" step="0.01" id="montoRetiro" name="montoRetiro" required>
             </div>
             <div>
                 <label for="descripcionRetiro">Descripción:</label>
-                <input type="text" id="descripcionRetiro" name="descripcionRetiro">
+                <input type="text" id="descripcionRetiro" name="descripcionRetiro" required>
             </div>
         </div>
 
         <div id="camposTransferencia" style="display:none;">
             <div>
                 <label for="cuentaOrigenId">ID de Cuenta Origen:</label>
-                <input type="number" id="cuentaOrigenId" name="cuentaOrigenId">
+                <input type="number" id="cuentaOrigenId" name="cuentaOrigenId" value="1" required>
             </div>
             <div>
                 <label for="cuentaDestino">Cuenta Destino:</label>
-                <input type="text" id="cuentaDestino" name="cuentaDestino">
+                <input type="text" id="cuentaDestino" name="cuentaDestino" value="40010002020200000020" required>
             </div>
             <div>
                 <label for="montoTransferencia">Monto:</label>
-                <input type="number" step="0.01" id="montoTransferencia" name="montoTransferencia">
+                <input type="number" step="0.01" id="montoTransferencia" name="montoTransferencia" value="50" required>
             </div>
             <div>
                 <label for="descripcionTransferencia">Descripción:</label>
-                <input type="text" id="descripcionTransferencia" name="descripcionTransferencia">
+                <input type="text" id="descripcionTransferencia" name="descripcionTransferencia" value="Transferencia de prueba" required>
             </div>
         </div>
 
@@ -82,10 +82,10 @@
 
 <div>
     <h2>Consultar Movimientos</h2>
-    <form id="consultaForm" action="api/movimientos/consulta" method="GET">
+    <form id="consultaForm">
         <div>
             <label for="cuentaIdConsulta">ID de Cuenta:</label>
-            <input type="number" id="cuentaIdConsulta" name="cuentaId" required>
+            <input type="number" id="cuentaIdConsulta" name="cuentaId" value="1" required>
         </div>
         <div>
             <label for="limiteConsulta">Límite de resultados:</label>
@@ -112,12 +112,157 @@
         </tr>
         </thead>
         <tbody id="tablaMovimientos">
-
         <tr>
             <td colspan="7" align="center">No hay movimientos para mostrar</td>
         </tr>
         </tbody>
     </table>
 </div>
+
+<script>
+    function mostrarCampos() {
+        var tipoOperacion = document.getElementById('tipoOperacion').value;
+
+        document.getElementById('camposDeposito').style.display = 'none';
+        document.getElementById('camposRetiro').style.display = 'none';
+        document.getElementById('camposTransferencia').style.display = 'none';
+
+        if (tipoOperacion === 'deposito') {
+            document.getElementById('camposDeposito').style.display = 'block';
+        } else if (tipoOperacion === 'retiro') {
+            document.getElementById('camposRetiro').style.display = 'block';
+        } else if (tipoOperacion === 'transferencia') {
+            document.getElementById('camposTransferencia').style.display = 'block';
+        }
+    }
+
+    function realizarOperacion(event) {
+        event.preventDefault();
+        console.log("Iniciando operacion...");
+
+        const tipoOperacion = document.getElementById('tipoOperacion').value;
+        let url = '';
+        let params = new URLSearchParams();
+
+        if (tipoOperacion === 'deposito') {
+            url = '/api/movimientos/deposito';
+            params.append('cuentaId', document.getElementById('cuentaIdDeposito').value);
+            params.append('monto', document.getElementById('montoDeposito').value);
+            params.append('descripcion', document.getElementById('descripcionDeposito').value);
+            params.append('cuentaRemitente', document.getElementById('cuentaRemitenteDeposito').value);
+        } else if (tipoOperacion === 'retiro') {
+            url = '/api/movimientos/retiro';
+            params.append('cuentaId', document.getElementById('cuentaIdRetiro').value);
+            params.append('monto', document.getElementById('montoRetiro').value);
+            params.append('descripcion', document.getElementById('descripcionRetiro').value);
+        } else if (tipoOperacion === 'transferencia') {
+            url = '/api/movimientos/transferencia';
+            params.append('cuentaOrigenId', document.getElementById('cuentaOrigenId').value);
+            params.append('cuentaDestino', document.getElementById('cuentaDestino').value);
+            params.append('monto', document.getElementById('montoTransferencia').value);
+            params.append('descripcion', document.getElementById('descripcionTransferencia').value);
+        }
+
+        console.log("URL:", url);
+        console.log("Params:", params.toString());
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: params
+        })
+        .then(response => {
+            console.log("Response status:", response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log("Response data:", data);
+            if (data.status === 'success') {
+                alert(data.message);
+                document.getElementById('movimientoForm').reset();
+                mostrarCampos();
+
+                // Actualizar tabla automaticamente
+                const cuentaConsulta = document.getElementById('cuentaIdConsulta').value;
+                const limiteConsulta = document.getElementById('limiteConsulta').value;
+
+                if (cuentaConsulta) {
+                    setTimeout(() => {
+                        consultarMovimientosAuto(cuentaConsulta, limiteConsulta);
+                    }, 1000);
+                }
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error("Fetch error:", error);
+            alert('Error de conexion: ' + error.message);
+        });
+    }
+
+    function consultarMovimientosAuto(cuentaId, limite) {
+        const url = `/api/movimientos/consulta?cuentaId=${cuentaId}&limite=${limite || 10}`;
+
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            actualizarTablaMovimientos(data);
+        })
+        .catch(error => {
+            console.error("Error en consulta automatica:", error);
+        });
+    }
+
+    function consultarMovimientos(event) {
+        event.preventDefault();
+
+        const cuentaId = document.getElementById('cuentaIdConsulta').value;
+        const limite = document.getElementById('limiteConsulta').value;
+
+        fetch(`/api/movimientos/consulta?cuentaId=${cuentaId}&limite=${limite}`)
+        .then(response => response.json())
+        .then(data => {
+            actualizarTablaMovimientos(data);
+        })
+        .catch(error => {
+            alert('Error al consultar: ' + error.message);
+        });
+    }
+
+    function actualizarTablaMovimientos(data) {
+        const tbody = document.getElementById('tablaMovimientos');
+        tbody.innerHTML = '';
+
+        if (data.status === 'error') {
+            tbody.innerHTML = `<tr><td colspan="7">${data.message}</td></tr>`;
+        } else if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7">No hay movimientos para mostrar</td></tr>';
+        } else {
+            data.forEach(movimiento => {
+                const row = `
+                    <tr>
+                        <td>${movimiento.id || ''}</td>
+                        <td>${movimiento.cuentaId || ''}</td>
+                        <td>${movimiento.monto || ''}</td>
+                        <td>${movimiento.descripcion || ''}</td>
+                        <td>${movimiento.fechaMovimiento || ''}</td>
+                        <td>${movimiento.cuentaRemitente || ''}</td>
+                        <td>${movimiento.cuentaReceptora || ''}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        mostrarCampos();
+        document.getElementById('movimientoForm').addEventListener('submit', realizarOperacion);
+        document.getElementById('consultaForm').addEventListener('submit', consultarMovimientos);
+    });
+</script>
 </body>
 </html>
