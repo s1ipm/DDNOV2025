@@ -19,7 +19,6 @@ public class Movimiento {
     public Long getCuentaId() { return cuentaId; }
     public void setCuentaId(Long cuentaId) { this.cuentaId = cuentaId; }
 
-    // FALTABAN ESTOS MÉTODOS
     public String getTipoMovimiento() { return tipoMovimiento; }
     public void setTipoMovimiento(String tipoMovimiento) { this.tipoMovimiento = tipoMovimiento; }
 

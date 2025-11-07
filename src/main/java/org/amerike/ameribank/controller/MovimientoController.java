@@ -1,6 +1,6 @@
 package org.amerike.ameribank.controller;
 
-import org.amerike.ameribank.dao.MovimientoDAO;
+import org.amerike.ameribank.service.MovimientoService;
 import org.amerike.ameribank.model.Movimiento;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,10 +13,10 @@ import java.util.Map;
 @RequestMapping("/api/movimientos")
 public class MovimientoController {
 
-    private final MovimientoDAO movimientoDAO;
+    private final MovimientoService movimientoService;
 
-    public MovimientoController(MovimientoDAO movimientoDAO) {
-        this.movimientoDAO = movimientoDAO;
+    public MovimientoController(MovimientoService movimientoService) {
+        this.movimientoService = movimientoService;
     }
 
     @PostMapping("/deposito")
@@ -26,16 +26,21 @@ public class MovimientoController {
             @RequestParam String descripcion,
             @RequestParam String cuentaRemitente) {
 
-        System.out.println("DEPOSITO - cuentaId: " + cuentaId + ", monto: " + monto);
+        System.out.println("CONTROLLER - DEPOSITO INICIADO");
+        System.out.println("  cuentaId: " + cuentaId);
+        System.out.println("  monto: " + monto);
+        System.out.println("  descripcion: " + descripcion);
+        System.out.println("  cuentaRemitente: " + cuentaRemitente);
 
         Map<String, String> response = new HashMap<>();
         try {
-            movimientoDAO.registrarDeposito(cuentaId, monto, descripcion, cuentaRemitente);
+            movimientoService.realizarDeposito(cuentaId, monto, descripcion, cuentaRemitente);
             response.put("status", "success");
             response.put("message", "Depósito realizado exitosamente");
-            System.out.println("DEPOSITO EXITOSO");
+            System.out.println("CONTROLLER - DEPOSITO EXITOSO");
         } catch (Exception e) {
-            System.out.println("ERROR DEPOSITO: " + e.getMessage());
+            System.out.println("CONTROLLER - ERROR DEPOSITO: " + e.getMessage());
+            e.printStackTrace();
             response.put("status", "error");
             response.put("message", "Error al realizar depósito: " + e.getMessage());
         }
@@ -48,16 +53,20 @@ public class MovimientoController {
             @RequestParam BigDecimal monto,
             @RequestParam String descripcion) {
 
-        System.out.println("RETIRO - cuentaId: " + cuentaId + ", monto: " + monto);
+        System.out.println("CONTROLLER - RETIRO INICIADO");
+        System.out.println("  cuentaId: " + cuentaId);
+        System.out.println("  monto: " + monto);
+        System.out.println("  descripcion: " + descripcion);
 
         Map<String, String> response = new HashMap<>();
         try {
-            movimientoDAO.registrarRetiro(cuentaId, monto, descripcion);
+            movimientoService.realizarRetiro(cuentaId, monto, descripcion);
             response.put("status", "success");
             response.put("message", "Retiro realizado exitosamente");
-            System.out.println("RETIRO EXITOSO");
+            System.out.println("CONTROLLER - RETIRO EXITOSO");
         } catch (Exception e) {
-            System.out.println("ERROR RETIRO: " + e.getMessage());
+            System.out.println("CONTROLLER - ERROR RETIRO: " + e.getMessage());
+            e.printStackTrace();
             response.put("status", "error");
             response.put("message", "Error al realizar retiro: " + e.getMessage());
         }
@@ -71,16 +80,21 @@ public class MovimientoController {
             @RequestParam BigDecimal monto,
             @RequestParam String descripcion) {
 
-        System.out.println("TRANSFERENCIA - cuentaOrigen: " + cuentaOrigenId + ", cuentaDestino: " + cuentaDestino + ", monto: " + monto);
+        System.out.println("CONTROLLER - TRANSFERENCIA INICIADA");
+        System.out.println("  cuentaOrigenId: " + cuentaOrigenId);
+        System.out.println("  cuentaDestino: " + cuentaDestino);
+        System.out.println("  monto: " + monto);
+        System.out.println("  descripcion: " + descripcion);
 
         Map<String, String> response = new HashMap<>();
         try {
-            movimientoDAO.registrarTransferencia(cuentaOrigenId, cuentaDestino, monto, descripcion);
+            movimientoService.realizarTransferencia(cuentaOrigenId, cuentaDestino, monto, descripcion);
             response.put("status", "success");
             response.put("message", "Transferencia realizada exitosamente");
-            System.out.println("TRANSFERENCIA EXITOSA");
+            System.out.println("CONTROLLER - TRANSFERENCIA EXITOSA");
         } catch (Exception e) {
-            System.out.println("ERROR TRANSFERENCIA: " + e.getMessage());
+            System.out.println("CONTROLLER - ERROR TRANSFERENCIA: " + e.getMessage());
+            e.printStackTrace();
             response.put("status", "error");
             response.put("message", "Error al realizar transferencia: " + e.getMessage());
         }
@@ -92,14 +106,17 @@ public class MovimientoController {
             @RequestParam Long cuentaId,
             @RequestParam(defaultValue = "10") int limite) {
 
-        System.out.println("CONSULTA - cuentaId: " + cuentaId + ", limite: " + limite);
+        System.out.println("CONTROLLER - CONSULTA INICIADA");
+        System.out.println("  cuentaId: " + cuentaId);
+        System.out.println("  limite: " + limite);
 
         try {
-            List<Movimiento> movimientos = movimientoDAO.obtenerMovimientosPorCuenta(cuentaId, limite);
-            System.out.println("MOVIMIENTOS ENCONTRADOS: " + movimientos.size());
+            List<Movimiento> movimientos = movimientoService.obtenerMovimientosPorCuenta(cuentaId, limite);
+            System.out.println("CONTROLLER - MOVIMIENTOS ENCONTRADOS: " + movimientos.size());
             return movimientos;
         } catch (Exception e) {
-            System.out.println("ERROR CONSULTA: " + e.getMessage());
+            System.out.println("CONTROLLER - ERROR CONSULTA: " + e.getMessage());
+            e.printStackTrace();
             return List.of();
         }
     }
